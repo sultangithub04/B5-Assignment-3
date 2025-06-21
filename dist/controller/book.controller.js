@@ -8,27 +8,86 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBook = exports.updateBook = exports.getBookById = exports.getAllBook = exports.createBook = void 0;
 const books_model_1 = require("../models/books.model");
 const createBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const book = yield books_model_1.Book.create(req.body);
+        const _a = book.toObject(), { _id } = _a, rest = __rest(_a, ["_id"]);
+        const orderedBook = Object.assign({ _id }, rest);
         res.status(201).json({
             "success": true,
             "message": "Book created successfully",
-            "data": book
+            "data": orderedBook
         });
     }
     catch (error) {
         res.status(400).json({
-            success: false,
             message: 'Validataion Failed',
+            success: false,
             error
         });
     }
 });
 exports.createBook = createBook;
+// export const createBook = async (req: Request, res: Response) => {
+//   try {
+//     const book = await Book.create(req.body);
+//     const { _id, ...rest } = book.toObject();
+//     const orderedBook = { _id, ...rest };
+//     res.status(201).json({
+//       success: true,
+//       message: "Book created successfully",
+//       data: orderedBook,
+//     });
+//   } catch (error)
+//    {
+//     if (error.name === 'ValidationError') {
+//       const formattedErrors: Record<string, any> = {};
+//       for (const field in error.errors) {
+//         const err = error.errors[field];
+//         formattedErrors[field] = {
+//           message: err.message,
+//           name: err.name,
+//           properties: {
+//             message: err.message,
+//             type: err.properties?.type,
+//             min: err.properties?.min,
+//           },
+//           kind: err.kind,
+//           path: err.path,
+//           value: err.value,
+//         };
+//       }
+//       return res.status(400).json({
+//         message: "Validation failed",
+//         success: false,
+//         error: {
+//           name: "ValidationError",
+//           errors: formattedErrors,
+//         },
+//       });
+//     }
+//     // generic fallback
+//     res.status(500).json({
+//       success: false,
+//       message: "Something went wrong",
+//       error,
+//     });
+//   }
+// };
 const getAllBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { filter, sortBy = 'createdAt', sort = 'asc', limit = '10' } = req.query;
