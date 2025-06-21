@@ -35,32 +35,28 @@ This project enables efficient library resource tracking. It allows users to man
 ## 🛠️ Setup Instructions
 
 ### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/library-management-system.git
-cd library-management-system
+
+https://github.com/sultangithub04/B5-Assignment-3.git
 
 2. Install dependencies
-bash
 
 npm install
+
 3. Configure Environment Variables
 Create a .env file in the root directory and add the following:
 
-env
-
-
-DATABASE_URL=mongodb://localhost:27017/library
+DATABASE_URL=mongodb+srv://express:*******@cluster0.ptqba.mongodb.net/bookDB
 PORT=5000
+
 4. Run the development server
-bash
 
 npm run dev
-📘 How to Use / API Endpoints
-➕ Create a Book
-POST /api/books
 
-json
+📚 Create Book
 
+## POST /api/books
+### Request:
+```bash
 {
   "title": "The Theory of Everything",
   "author": "Stephen Hawking",
@@ -71,6 +67,7 @@ json
 }
 ```
 📚 Get All Books
+
 GET /api/books?filter=FANTASY&sortBy=createdAt&sort=desc&limit=5
 
 Supports:
@@ -84,59 +81,29 @@ sort: asc or desc
 limit: Number of books
 
 🧾 Get Book by ID
+
 GET /api/books/:bookId
 
 ✏️ Update Book
 PUT /api/books/:bookId
 
+```bash
 
 {
   "copies": 10
 }
+```
 ❌ Delete Book
 DELETE /api/books/:bookId
 
 📥 Borrow a Book
 POST /api/borrow
 
-json
+```bash
 
 {
   "book": "BOOK_OBJECT_ID",
   "quantity": 2,
   "dueDate": "2025-07-20"
 }
-✅ Business Logic:
-
-Reduces available copies
-
-If copies = 0, marks book as unavailable
-
-📊 Borrow Summary (Aggregation)
-GET /api/borrow
-
-Response:
-
-json
-
-{
-  "success": true,
-  "message": "Borrowed books summary retrieved successfully",
-  "data": [
-    {
-      "book": {
-        "title": "The Theory of Everything",
-        "isbn": "9780553380163"
-      },
-      "totalQuantity": 5
-    }
-  ]
-}
-❗ Error Example
-json
-
-{
-  "success": false,
-  "message": "Validation failed",
-  "error": "Not enough copies available"
-}
+```
