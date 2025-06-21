@@ -6,10 +6,13 @@ import { Borrow } from "../models/borrow.model"
 export const borrowBook = async (req: Request, res: Response) => {
     try {
         const borrow = await Borrow.create(req.body)
+
+        const { _id, ...rest } = borrow.toObject();
+        const borrowBook = { _id, ...rest };
         res.status(201).json({
             success: true,
             message: "Book borrowed successfully",
-            data: borrow
+            data: borrowBook
         })
 
 
@@ -45,7 +48,7 @@ export const getBorrow = async (req: Request, res: Response) => {
             },
             {
                 $project: {
-                    _id:0,
+                    _id: 0,
                     book: {
                         title: '$booksDetails.title',
                         isbn: '$booksDetails.isbn',
@@ -56,11 +59,17 @@ export const getBorrow = async (req: Request, res: Response) => {
             }
 
         ])
+        const orderedResult = getbook.map(item => ({
+            book: item.book,
+            totalQuantity: item.totalQuantity
+        }))
+
         res.status(200).json({
             success: true,
             message: 'Borrowed books summary retrieved successfully',
-            data: getbook
+            data: orderedResult
         })
+
 
     } catch (error) {
         res.status(500).json({
