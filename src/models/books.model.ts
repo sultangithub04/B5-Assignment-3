@@ -13,6 +13,23 @@ interface IBook {
 
 }
 
+export interface IError {
+  name: 'ValidationError';
+  errors: {
+    [field: string]: {
+      message: string;
+      name: string;
+      properties?: {
+        message?: string;
+        type?: string;
+        min?: number;
+      };
+      kind: string;
+      path: string;
+      value: number;
+    };
+  };
+}
 
 const bookSchima: Schema<IBook> = new Schema({
     title: {

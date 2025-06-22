@@ -1,84 +1,62 @@
 import { Request, Response } from "express"
-import { Book } from "../models/books.model"
+import { Book, IError } from "../models/books.model"
+
 
 export const createBook = async (req: Request, res: Response) => {
   try {
-    const book = await Book.create(req.body)
+    const book = await Book.create(req.body);
 
     const { _id, ...rest } = book.toObject();
     const orderedBook = { _id, ...rest };
+
     res.status(201).json({
-      "success": true,
-      "message": "Book created successfully",
-      "data": orderedBook
-    })
+      success: true,
+      message: 'Book created successfully',
+      data: orderedBook,
+    });
 
+  } catch (error: unknown) {
+    // Check for Mongoose validation error
+    if ((error as IError).name === 'ValidationError') {
+      const validationError = error as IError;
+      const formattedErrors: Record<string, unknown> = {};
 
-  } 
-  catch (error) {
-    res.status(400).json({
-      message: 'Validataion Failed',
+      for (const field in validationError.errors) {
+        const err = validationError.errors[field];
+        formattedErrors[field] = {
+          message: err.message,
+          name: err.name,
+          properties: {
+            message: err.message,
+            type: err.properties?.type,
+            min: err.properties?.min,
+          },
+          kind: err.kind,
+          path: err.path,
+          value: err.value,
+        };
+      }
+
+      return res.status(400).json({
+        message: 'Validation failed',
+        success: false,
+        error: {
+          name: 'ValidationError',
+          errors: formattedErrors,
+        },
+      });
+    }
+
+    // Generic fallback for unknown errors
+    res.status(500).json({
       success: false,
-      error
-    })
+      message: 'Something went wrong',
+      error: (error as Error).message || error,
+    });
   }
-
-}
-
+};
 
 
-// export const createBook = async (req: Request, res: Response) => {
-//   try {
-//     const book = await Book.create(req.body);
-
-//     const { _id, ...rest } = book.toObject();
-//     const orderedBook = { _id, ...rest };
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Book created successfully",
-//       data: orderedBook,
-//     });
-
-//   } catch (error)
-//    {
-//     if (error.name === 'ValidationError') {
-//       const formattedErrors: Record<string, any> = {};
-
-//       for (const field in error.errors) {
-//         const err = error.errors[field];
-//         formattedErrors[field] = {
-//           message: err.message,
-//           name: err.name,
-//           properties: {
-//             message: err.message,
-//             type: err.properties?.type,
-//             min: err.properties?.min,
-//           },
-//           kind: err.kind,
-//           path: err.path,
-//           value: err.value,
-//         };
-//       }
-
-//       return res.status(400).json({
-//         message: "Validation failed",
-//         success: false,
-//         error: {
-//           name: "ValidationError",
-//           errors: formattedErrors,
-//         },
-//       });
-//     }
-
-//     // generic fallback
-//     res.status(500).json({
-//       success: false,
-//       message: "Something went wrong",
-//       error,
-//     });
-//   }
-// };
 
 
 export const getAllBook = async (req: Request, res: Response) => {
